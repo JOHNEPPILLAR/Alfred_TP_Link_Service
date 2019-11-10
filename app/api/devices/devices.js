@@ -5,6 +5,11 @@ const Skills = require('restify-router').Router;
 const serviceHelper = require('alfred-helper');
 const { Client } = require('tplink-smarthome-api');
 
+/**
+ * Import helper libraries
+ */
+const schedules = require('../../schedules/controller.js');
+
 const skill = new Skills();
 
 /**
@@ -55,6 +60,7 @@ async function listDevices(req, res, next) {
       client.stopDiscovery();
       serviceHelper.log('info', `Found ${devices.length} TL-Link device(s)`);
       serviceHelper.sendResponse(res, 200, devices);
+      next();
     }, 15000);
   } catch (err) {
     serviceHelper.log('error', err.message);
@@ -126,6 +132,147 @@ async function updateDevice(req, res, next) {
   }
 }
 skill.put('/devices/:deviceHost', updateDevice);
+
+/**
+ * @api {put} /schedules/:scheduleID
+ * @apiName schedules
+ * @apiGroup Display
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTPS/1.1 200 OK
+ *   {
+ *     "data": [
+ *       {
+ *           "name": "Christmas tree morning lights on",
+ *           "hour": 6,
+ *           "minute": 30,
+ *           "host": "1",
+ *           "action": true,
+ *           "active": true
+ *       }
+ *     ]
+ *   }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *   HTTPS/1.1 500 Internal error
+ *   {
+ *     data: Error message
+ *   }
+ *
+ */
+async function listSchedule(req, res, next) {
+  serviceHelper.log('trace', 'List TP-Link schedules API called');
+  serviceHelper.log('trace', `Params: ${JSON.stringify(req.params)}`);
+
+  const { scheduleID } = req.params;
+
+  try {
+    const SQL = `SELECT name, hour, minute, host, name, action, active FROM tp_link_schedules WHERE id = ${scheduleID}`;
+    serviceHelper.log('trace', 'Connect to data store connection pool');
+    const dbClient = await global.devicesDataClient.connect(); // Connect to data store
+    serviceHelper.log('trace', 'Get schedule settings');
+    const results = await dbClient.query(SQL);
+    serviceHelper.log(
+      'trace',
+      'Release the data store connection back to the pool',
+    );
+    await dbClient.release(); // Return data store connection back to pool
+
+    if (results.rowCount === 0) {
+      // Exit function as no data to process
+      serviceHelper.log('info', 'No tp-link schedules fonud');
+      serviceHelper.sendResponse(res, 200, {});
+      next();
+      return false;
+    }
+    serviceHelper.sendResponse(res, 200, results.rows);
+    next();
+    return true;
+  } catch (err) {
+    serviceHelper.log('error', err.message);
+    if (typeof res !== 'undefined' && res !== null) {
+      serviceHelper.sendResponse(res, 500, err);
+      next();
+    }
+    return false;
+  }
+}
+skill.get('/schedules/:scheduleID', listSchedule);
+
+/**
+ * @api {put} /schedules/:scheduleID
+ * @apiName schedules
+ * @apiGroup Display
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTPS/1.1 200 OK
+ *   {
+ *     "data": saved
+ *   }
+ *
+ * @apiErrorExample {json} Error-Response:
+ *   HTTPS/1.1 500 Internal error
+ *   {
+ *     data: Error message
+ *   }
+ *
+ */
+async function updateSchedule(req, res, next) {
+  serviceHelper.log('trace', 'Update TP-Link schedules API called');
+  serviceHelper.log('trace', `Params: ${JSON.stringify(req.params)}`);
+
+  const { scheduleID } = req.params;
+  const {
+    hour, minute, host, name, action, active,
+  } = req.body;
+
+  try {
+    const SQL = 'UPDATE tp_link_schedules SET hour = $2, minute = $3, host = $4, name = $5, action = $6, active = $7 WHERE id = $1';
+    const SQLValues = [
+      scheduleID,
+      hour,
+      minute,
+      host,
+      name,
+      action,
+      active,
+    ];
+
+    serviceHelper.log('trace', 'Connect to data store connection pool');
+    const dbClient = await global.devicesDataClient.connect(); // Connect to data store
+    serviceHelper.log('trace', 'Get schedule settings');
+    const results = await dbClient.query(SQL, SQLValues);
+
+    serviceHelper.log(
+      'trace',
+      'Release the data store connection back to the pool',
+    );
+    await dbClient.release(); // Return data store connection back to pool
+
+    // Send data back to caler
+    if (results.rowCount === 1) {
+      serviceHelper.log(
+        'info',
+        `Saved schedule data: ${JSON.stringify(req.body)}`,
+      );
+      serviceHelper.sendResponse(res, 200, 'saved');
+      schedules.setSchedule(); // Re-set schedule
+    } else {
+      serviceHelper.log('error', 'Failed to save data');
+      serviceHelper.sendResponse(res, 500, 'failed to save');
+    }
+    next();
+    return true;
+  } catch (err) {
+    serviceHelper.log('error', err.message);
+    if (typeof res !== 'undefined' && res !== null) {
+      serviceHelper.sendResponse(res, 500, err);
+      next();
+    }
+    return false;
+  }
+}
+skill.put('/schedules/:scheduleID', updateSchedule);
 
 module.exports = {
   skill,
