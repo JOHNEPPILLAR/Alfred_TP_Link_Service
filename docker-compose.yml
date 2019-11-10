@@ -1,0 +1,17 @@
+version: '3.5'
+
+services:
+  alfred_tp_link_service:
+    build: .
+    image: alfred_tp_link_service:latest
+    container_name: alfred_tp_link_service
+    restart: always
+    hostname: alfred_tp_link_service
+    networks:
+      - alfred
+    command: npm run prod
+
+networks:
+  alfred:
+    name: alfred
+    driver: bridge
