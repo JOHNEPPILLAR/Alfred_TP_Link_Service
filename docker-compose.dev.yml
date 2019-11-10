@@ -12,7 +12,7 @@ services:
     networks:
       - alfred
     ports:
-      - '3985:3978'
+      - '3986:3978'
     command: npm run test
 
 networks:
