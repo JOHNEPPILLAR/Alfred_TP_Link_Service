@@ -13,7 +13,7 @@ services:
       - alfred
     ports:
       - '3986:3978'
-    command: npm run test
+    command: npm run local
 
 networks:
   alfred:
