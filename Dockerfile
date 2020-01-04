@@ -16,14 +16,14 @@ RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/Lond
 
 WORKDIR /home/nodejs/app
 
-COPY . /home/nodejs/app
+COPY package*.json ./
 
-RUN mv certs/alfred_tp_link_service.key certs/server.key \
-	&& mv certs/alfred_tp_link_service.crt certs/server.crt 
+RUN npm install
 
-RUN npm update \
-	&& npm install --production
+COPY --chown=node:node . .
+
+USER node
 
 HEALTHCHECK --start-period=60s --interval=10s --timeout=10s --retries=6 CMD ["./healthcheck.sh"]
 
-EXPOSE 3981
+EXPOSE 3978

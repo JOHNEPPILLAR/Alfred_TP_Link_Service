@@ -64,14 +64,14 @@ async function setupSchedule(data) {
  * Set up schedules
  */
 exports.setup = async () => {
-  let dbClient;
   let results;
 
   try {
     // Get data from data store
     const SQL = 'SELECT name, hour, minute, host, name, action FROM tp_link_schedules WHERE active';
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    dbClient = await global.devicesDataClient.connect(); // Connect to data store
+    const dbConnection = await serviceHelper.connectToDB('tplink');
+    const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get schedule settings');
     results = await dbClient.query(SQL);
     serviceHelper.log(
@@ -79,6 +79,7 @@ exports.setup = async () => {
       'Release the data store connection back to the pool',
     );
     await dbClient.release(); // Return data store connection back to pool
+    await dbClient.end(); // Close data store connection
 
     if (results.rowCount === 0) {
       // Exit function as no data to process
@@ -87,9 +88,7 @@ exports.setup = async () => {
     }
 
     // Setup timers
-    results.rows.forEach((info) => {
-      setupSchedule(info);
-    });
+    results.rows.map((info) => setupSchedule(info));
     return true;
   } catch (err) {
     serviceHelper.log('error', err.message);

@@ -168,8 +168,8 @@ async function listSchedule(req, res, next) {
 
   try {
     const SQL = `SELECT name, hour, minute, host, name, action, active FROM tp_link_schedules WHERE id = ${scheduleID}`;
-    serviceHelper.log('trace', 'Connect to data store connection pool');
-    const dbClient = await global.devicesDataClient.connect(); // Connect to data store
+    const dbConnection = await serviceHelper.connectToDB('tplink');
+    const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get schedule settings');
     const results = await dbClient.query(SQL);
     serviceHelper.log(
@@ -177,6 +177,7 @@ async function listSchedule(req, res, next) {
       'Release the data store connection back to the pool',
     );
     await dbClient.release(); // Return data store connection back to pool
+    await dbClient.end(); // Close data store connection
 
     if (results.rowCount === 0) {
       // Exit function as no data to process
@@ -239,7 +240,8 @@ async function updateSchedule(req, res, next) {
     ];
 
     serviceHelper.log('trace', 'Connect to data store connection pool');
-    const dbClient = await global.devicesDataClient.connect(); // Connect to data store
+    const dbConnection = await serviceHelper.connectToDB('tplink');
+    const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get schedule settings');
     const results = await dbClient.query(SQL, SQLValues);
 
@@ -248,6 +250,7 @@ async function updateSchedule(req, res, next) {
       'Release the data store connection back to the pool',
     );
     await dbClient.release(); // Return data store connection back to pool
+    await dbClient.end(); // Close data store connection
 
     // Send data back to caler
     if (results.rowCount === 1) {
