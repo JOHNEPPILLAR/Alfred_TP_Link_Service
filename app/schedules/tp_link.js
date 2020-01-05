@@ -17,9 +17,7 @@ async function updateDevice(data) {
 
     const req = {
       params: { deviceHost: data.host },
-      body: {
-        deviceAction: action,
-      },
+      body: { deviceAction: action },
     };
     const updateResponse = await deviceHelper.updateDevice(req);
     if (updateResponse instanceof Error) {
@@ -45,9 +43,7 @@ async function setupSchedule(data) {
   let rule = new scheduler.RecurrenceRule();
   rule.hour = data.hour;
   rule.minute = data.minute;
-  const schedule = scheduler.scheduleJob(rule, () => {
-    updateDevice(data);
-  });
+  const schedule = scheduler.scheduleJob(rule, () => updateDevice(data));
   global.schedules.push(schedule);
   serviceHelper.log(
     'info',
