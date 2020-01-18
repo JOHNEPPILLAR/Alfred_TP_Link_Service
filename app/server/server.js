@@ -1,16 +1,16 @@
 /**
  * Import external libraries
  */
-require('dotenv').config();
-
 const restify = require('restify');
 const UUID = require('pure-uuid');
 const serviceHelper = require('alfred-helper');
-const { version } = require('../../package.json');
 
 /**
  * Import helper libraries
  */
+const { version } = require('../../package.json');
+const serviceName = require('../../package.json').description;
+const virtualHost = require('../../package.json').name;
 const schedules = require('../schedules/controller.js');
 const APIroot = require('../api/root/root.js');
 const APIdevices = require('../api/devices/devices.js');
@@ -22,8 +22,8 @@ let ClientAccessKey;
 async function setupAndRun() {
   // Restify server Init
   serviceHelper.log('trace', 'Getting certs');
-  const key = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, `${process.env.VIRTUAL_HOST}_key`);
-  const certificate = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, `${process.env.VIRTUAL_HOST}_cert`);
+  const key = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, `${virtualHost}_key`);
+  const certificate = await serviceHelper.vaultSecret(process.env.ENVIRONMENT, `${virtualHost}_cert`);
 
   if (key instanceof Error || certificate instanceof Error) {
     serviceHelper.log('error', 'Not able to get secret (CERTS) from vault');
@@ -31,7 +31,7 @@ async function setupAndRun() {
     process.exit(1); // Exit app
   }
   const server = restify.createServer({
-    name: process.env.VIRTUAL_HOST,
+    name: virtualHost,
     version,
     key,
     certificate,
@@ -50,7 +50,7 @@ async function setupAndRun() {
     serviceHelper.log('trace', req.url);
     res.setHeader(
       'Content-Security-Policy',
-      `default-src 'self' ${process.env.VIRTUAL_HOST}`,
+      `default-src 'self' ${virtualHost}`,
     );
     res.setHeader(
       'Strict-Transport-Security',
@@ -128,7 +128,7 @@ async function setupAndRun() {
 
   // Start service and listen to requests
   server.listen(process.env.PORT, async () => {
-    serviceHelper.log('info', `${process.env.VIRTUAL_HOST} has started`);
+    serviceHelper.log('info', `${serviceName} has started`);
     if (process.env.MOCK === 'true') {
       serviceHelper.log('info', 'Mocking enabled, will not setup monitors or schedules');
     } else {
