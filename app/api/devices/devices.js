@@ -169,14 +169,13 @@ async function listSchedule(req, res, next) {
   try {
     const SQL = `SELECT name, hour, minute, host, name, action, active FROM tp_link_schedules WHERE id = ${scheduleID}`;
     const dbConnection = await serviceHelper.connectToDB('tplink');
-    const dbClient = await dbConnection.connect(); // Connect to data store
     serviceHelper.log('trace', 'Get schedule settings');
-    const results = await dbClient.query(SQL);
+    const results = await dbConnection.query(SQL);
     serviceHelper.log(
       'trace',
       'Release the data store connection back to the pool',
     );
-    await dbClient.end(); // Close data store connection
+    await dbConnection.end(); // Close data store connection
 
     if (results.rowCount === 0) {
       // Exit function as no data to process
