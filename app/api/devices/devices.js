@@ -138,9 +138,11 @@ async function updateDevice(req, res, next) {
       client.stopDiscovery();
       if (!sentClientResponse) {
         serviceHelper.log('trace', 'Stopped searching for devices');
-        const err = new Error('Stopped searching for devices');
-        serviceHelper.sendResponse(res, 500, err);
-        next();
+        if (typeof res !== 'undefined' && res !== null) {
+          const err = new Error('Stopped searching for devices');
+          serviceHelper.sendResponse(res, 500, err);
+          next();
+        }
       }
     }, 15000);
   } catch (err) {

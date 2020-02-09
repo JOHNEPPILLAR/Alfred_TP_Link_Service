@@ -88,6 +88,7 @@ exports.setup = async () => {
 
     // Setup timers
     results.rows.map((info) => setupSchedule(info));
+
     return true;
   } catch (err) {
     serviceHelper.log('error', err.message);
