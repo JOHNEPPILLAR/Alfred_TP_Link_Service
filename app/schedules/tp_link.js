@@ -11,22 +11,28 @@ const deviceHelper = require('../api/devices/devices.js');
 
 async function updateDevice(data) {
   try {
+    if (data.deviceid === '800693F733CEA366746DA9EE9AA3CE0C17D8ACF4') { // Harriets bed lights
+      const kidsAtHomeToday = await serviceHelper.kidsAtHomeToday();
+      if (!kidsAtHomeToday) {
+        serviceHelper.log('trace', 'Override turning on as girls are not staying');
+        return;
+      }
+    }
+
     let action = 'off';
     if (data.action) action = 'on';
     serviceHelper.log('info', `TP-Link schedule - Turning ${action} ${data.name}`);
 
     const req = {
-      params: { deviceHost: data.host },
+      params: { deviceID: data.deviceid },
       body: { deviceAction: action },
     };
     const updateResponse = await deviceHelper.updateDevice(req);
     if (updateResponse instanceof Error) {
       throw new Error(`There was an error updating ${data.name}`);
     }
-    return true;
   } catch (err) {
     serviceHelper.log('error', err.message);
-    return false;
   }
 }
 
@@ -64,7 +70,7 @@ exports.setup = async () => {
 
   try {
     // Get data from data store
-    const SQL = 'SELECT name, hour, minute, host, name, action FROM tp_link_schedules WHERE active';
+    const SQL = 'SELECT name, hour, minute, deviceid, name, action FROM tp_link_schedules WHERE active';
     serviceHelper.log('trace', 'Connect to data store connection pool');
     const dbConnection = await serviceHelper.connectToDB('tplink');
     serviceHelper.log('trace', 'Get schedule settings');

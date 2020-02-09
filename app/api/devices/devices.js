@@ -94,34 +94,55 @@ async function updateDevice(req, res, next) {
 
   try {
     const client = new Client();
-    const { deviceHost } = req.params;
+    const { deviceID } = req.params;
     const { deviceAction } = req.body;
     let updateAction = false;
     if (deviceAction === 'on') updateAction = true;
 
-    const device = await client.getPlug({ host: deviceHost });
-    if (device instanceof Error) {
-      serviceHelper.log('error', device.message);
-      if (typeof res !== 'undefined' && res !== null) {
-        serviceHelper.sendResponse(res, 500, device);
-        next();
-      }
-    }
+    let deviceHost;
+    let sentClientResponse = false;
+    client.startDiscovery().on('device-new', async (device) => {
+      const deviceInfo = await device.getSysInfo();
+      if (deviceInfo.deviceId === deviceID) {
+        deviceHost = device.host;
+        client.stopDiscovery();
 
-    const updateResult = await device.setPowerState(updateAction);
-    if (updateResult instanceof Error) {
-      serviceHelper.log('error', updateResult.message);
-      if (typeof res !== 'undefined' && res !== null) {
-        serviceHelper.sendResponse(res, 500, updateResult);
+        const plug = await client.getPlug({ host: deviceHost });
+        if (device instanceof Error) {
+          serviceHelper.log('error', device.message);
+          if (typeof res !== 'undefined' && res !== null) {
+            sentClientResponse = true;
+            serviceHelper.sendResponse(res, 500, device);
+            next();
+          }
+        }
+        const updateResult = await plug.setPowerState(updateAction);
+        if (updateResult instanceof Error) {
+          serviceHelper.log('error', updateResult.message);
+          if (typeof res !== 'undefined' && res !== null) {
+            sentClientResponse = true;
+            serviceHelper.sendResponse(res, 500, updateResult);
+            next();
+          }
+        }
+        serviceHelper.log('info', `TP-Link device: ${deviceID} was turned ${deviceAction}`);
+        if (typeof res !== 'undefined' && res !== null) {
+          sentClientResponse = true;
+          serviceHelper.sendResponse(res, 200, '{ true }');
+          next();
+        }
+      }
+    });
+
+    setTimeout(() => {
+      client.stopDiscovery();
+      if (!sentClientResponse) {
+        serviceHelper.log('trace', 'Stopped searching for devices');
+        const err = new Error('Stopped searching for devices');
+        serviceHelper.sendResponse(res, 500, err);
         next();
       }
-    }
-    serviceHelper.log('info', `TP-Link device: ${deviceHost} was turned ${deviceAction}`);
-    if (typeof res !== 'undefined' && res !== null) {
-      serviceHelper.sendResponse(res, 200, '{ true }');
-      next();
-    }
-    return true;
+    }, 15000);
   } catch (err) {
     serviceHelper.log('error', err.message);
     if (typeof res !== 'undefined' && res !== null) {
@@ -130,8 +151,9 @@ async function updateDevice(req, res, next) {
     }
     return false;
   }
+  return true;
 }
-skill.put('/devices/:deviceHost', updateDevice);
+skill.put('/devices/:deviceID', updateDevice);
 
 /**
  * @api {put} /schedules/:scheduleID
