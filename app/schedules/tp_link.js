@@ -14,7 +14,7 @@ async function updateDevice(data) {
     if (data.deviceid === '800693F733CEA366746DA9EE9AA3CE0C17D8ACF4') { // Harriets bed lights
       const kidsAtHomeToday = await serviceHelper.kidsAtHomeToday();
       if (!kidsAtHomeToday) {
-        serviceHelper.log('trace', 'Override turning on as girls are not staying');
+        serviceHelper.log('info', 'Override turning on as girls are not staying');
         return;
       }
     }
@@ -41,7 +41,6 @@ async function setupSchedule(data) {
     'trace',
     `Create tp-link schedule for ${data.name}`,
   );
-
   if (data.hour === null || data.minute === null) {
     serviceHelper.log('error', 'Schedule values were null');
     return false;
@@ -88,7 +87,6 @@ exports.setup = async () => {
 
     // Setup timers
     results.rows.map((info) => setupSchedule(info));
-
     return true;
   } catch (err) {
     serviceHelper.log('error', err.message);
