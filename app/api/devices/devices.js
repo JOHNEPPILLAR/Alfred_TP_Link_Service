@@ -101,10 +101,12 @@ async function updateDevice(req, res, next) {
 
     let deviceHost;
     let sentClientResponse = false;
+    serviceHelper.log('info', 'Searching for plugs');
     client.startDiscovery().on('device-new', async (device) => {
       const deviceInfo = await device.getSysInfo();
       if (deviceInfo.deviceId === deviceID) {
         deviceHost = device.host;
+        serviceHelper.log('info', 'Found required plug');
         client.stopDiscovery();
 
         const plug = await client.getPlug({ host: deviceHost });
@@ -135,9 +137,9 @@ async function updateDevice(req, res, next) {
     });
 
     setTimeout(() => {
+      serviceHelper.log('trace', 'Stopped searching for devices');
       client.stopDiscovery();
       if (!sentClientResponse) {
-        serviceHelper.log('trace', 'Stopped searching for devices');
         if (typeof res !== 'undefined' && res !== null) {
           const err = new Error('Stopped searching for devices');
           serviceHelper.sendResponse(res, 500, err);

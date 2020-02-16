@@ -60,7 +60,6 @@ async function setupSchedule(data) {
     )}:${serviceHelper.zeroFill(rule.minute, 2)}`,
   );
   rule = null; // Clear schedule values
-  return true;
 }
 
 /**
