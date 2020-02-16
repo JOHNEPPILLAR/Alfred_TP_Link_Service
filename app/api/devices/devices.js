@@ -102,6 +102,21 @@ async function updateDevice(req, res, next) {
     let deviceHost;
     let sentClientResponse = false;
     serviceHelper.log('info', 'Searching for plugs');
+
+    setTimeout(() => {
+      client.stopDiscovery();
+      if (!sentClientResponse) {
+        serviceHelper.log('trace', 'Stopped searching for devices');
+        if (typeof res !== 'undefined' && res !== null) {
+          const err = new Error('Stopped searching for devices');
+          serviceHelper.sendResponse(res, 500, err);
+          next();
+          return err;
+        }
+      }
+      return true;
+    }, 15000);
+
     client.startDiscovery().on('device-new', async (device) => {
       const deviceInfo = await device.getSysInfo();
       if (deviceInfo.deviceId === deviceID) {
@@ -135,25 +150,13 @@ async function updateDevice(req, res, next) {
         }
       }
     });
-
-    setTimeout(() => {
-      serviceHelper.log('trace', 'Stopped searching for devices');
-      client.stopDiscovery();
-      if (!sentClientResponse) {
-        if (typeof res !== 'undefined' && res !== null) {
-          const err = new Error('Stopped searching for devices');
-          serviceHelper.sendResponse(res, 500, err);
-          next();
-        }
-      }
-    }, 15000);
   } catch (err) {
     serviceHelper.log('error', err.message);
     if (typeof res !== 'undefined' && res !== null) {
       serviceHelper.sendResponse(res, 500, err);
       next();
     }
-    return false;
+    return err;
   }
   return true;
 }
