@@ -11,14 +11,6 @@ const deviceHelper = require('../api/devices/devices.js');
 
 async function updateDevice(data) {
   try {
-    if (data.deviceid === '800693F733CEA366746DA9EE9AA3CE0C17D8ACF4') { // Harriets bed lights
-      const kidsAtHomeToday = await serviceHelper.kidsAtHomeToday();
-      if (!kidsAtHomeToday) {
-        serviceHelper.log('info', 'Override turning on as girls are not staying');
-        return;
-      }
-    }
-
     let action = 'off';
     if (data.action) action = 'on';
     serviceHelper.log('info', `TP-Link schedule - Turning ${action} ${data.name}`);
@@ -43,8 +35,18 @@ async function setupSchedule(data) {
   );
   if (data.hour === null || data.minute === null) {
     serviceHelper.log('error', 'Schedule values were null');
-    return false;
+    return;
   }
+
+  // Check if girls are staying
+  if (data.deviceid === '800693F733CEA366746DA9EE9AA3CE0C17D8ACF4') { // Harriets bed lights
+    const kidsAtHomeToday = await serviceHelper.kidsAtHomeToday();
+    if (!kidsAtHomeToday) {
+      serviceHelper.log('info', 'Override schedule: Girls are not staying');
+      return;
+    }
+  }
+
   let rule = new scheduler.RecurrenceRule();
   rule.hour = data.hour;
   rule.minute = data.minute;
