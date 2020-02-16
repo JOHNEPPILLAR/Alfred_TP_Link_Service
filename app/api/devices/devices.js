@@ -115,13 +115,13 @@ async function updateDevice(req, res, next) {
         }
       }
       return true;
-    }, 15000);
+    }, 35000);
 
     client.startDiscovery().on('device-new', async (device) => {
       const deviceInfo = await device.getSysInfo();
       if (deviceInfo.deviceId === deviceID) {
         deviceHost = device.host;
-        serviceHelper.log('info', 'Found required plug');
+        serviceHelper.log('info', `Found required plug @ ip: ${deviceHost}`);
         client.stopDiscovery();
 
         const plug = await client.getPlug({ host: deviceHost });
