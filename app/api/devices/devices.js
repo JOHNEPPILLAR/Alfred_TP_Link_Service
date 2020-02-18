@@ -44,7 +44,7 @@ async function listDevices(req, res, next) {
     const client = new Client();
 
     // Look for devices
-    client.startDiscovery().on('device-new', async (device) => {
+    client.startDiscovery({ broadcast: '192.168.63.255' }).on('device-new', async (device) => {
       const deviceInfo = await device.getSysInfo();
       serviceHelper.log('trace', `Found: ${deviceInfo.deviceId}`);
       devices.push({
