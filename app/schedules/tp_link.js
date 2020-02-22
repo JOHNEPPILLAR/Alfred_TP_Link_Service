@@ -86,7 +86,7 @@ exports.setup = async () => {
       return false;
     }
 
-    // Setup timers
+    // Setup schedules
     results.rows.map((info) => setupSchedule(info));
     return true;
   } catch (err) {
