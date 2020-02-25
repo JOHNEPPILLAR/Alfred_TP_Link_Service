@@ -117,7 +117,7 @@ async function updateDevice(req, res, next) {
       return true;
     }, 35000);
 
-    client.startDiscovery().on('device-new', async (device) => {
+    client.startDiscovery({ broadcast: '192.168.85.255' }).on('device-new', async (device) => {
       const deviceInfo = await device.getSysInfo();
       if (deviceInfo.deviceId === deviceID) {
         deviceHost = device.host;

@@ -3,6 +3,7 @@
  */
 const scheduler = require('node-schedule');
 const serviceHelper = require('alfred-helper');
+const dateformat = require('dateformat');
 
 /**
  * Import helper libraries
@@ -47,19 +48,15 @@ async function setupSchedule(data) {
     }
   }
 
-  let rule = new scheduler.RecurrenceRule();
-  rule.hour = data.hour;
-  rule.minute = data.minute;
-  const schedule = scheduler.scheduleJob(rule, () => updateDevice(data));
+  const date = new Date();
+  date.setHours(data.hour);
+  date.setMinutes(data.minute);
+  const schedule = scheduler.scheduleJob(date, () => updateDevice(data));
   global.schedules.push(schedule);
   serviceHelper.log(
     'info',
-    `${data.name} schedule will run at: ${serviceHelper.zeroFill(
-      rule.hour,
-      2,
-    )}:${serviceHelper.zeroFill(rule.minute, 2)}`,
+    `${data.name} schedule will run at ${dateformat(date, 'dd-mm-yyyy @ HH:MM')}`,
   );
-  rule = null; // Clear schedule values
 }
 
 /**
