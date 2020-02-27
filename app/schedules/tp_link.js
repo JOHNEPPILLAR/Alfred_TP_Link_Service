@@ -17,13 +17,11 @@ async function updateDevice(data) {
     serviceHelper.log('info', `TP-Link schedule - Turning ${action} ${data.name}`);
 
     const req = {
-      params: { deviceID: data.deviceid },
+      params: { deviceHost: '192.168.85.43' }, // Harriets lights
       body: { deviceAction: action },
     };
     const updateResponse = await deviceHelper.updateDevice(req);
-    if (updateResponse instanceof Error) {
-      throw new Error(`There was an error updating ${data.name}`);
-    }
+    if (updateResponse instanceof Error) throw new Error(`There was an error updating ${data.name}`);
   } catch (err) {
     serviceHelper.log('error', err.message);
   }

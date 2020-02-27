@@ -94,62 +94,32 @@ async function updateDevice(req, res, next) {
 
   try {
     const client = new Client();
-    const { deviceID } = req.params;
+    const { deviceHost } = req.params;
     const { deviceAction } = req.body;
     let updateAction = false;
     if (deviceAction === 'on') updateAction = true;
 
-    let deviceHost;
-    let sentClientResponse = false;
-    serviceHelper.log('info', 'Searching for plugs');
-
-    setTimeout(() => {
-      client.stopDiscovery();
-      if (!sentClientResponse) {
-        serviceHelper.log('trace', 'Stopped searching for devices');
-        if (typeof res !== 'undefined' && res !== null) {
-          const err = new Error('Stopped searching for devices');
-          serviceHelper.sendResponse(res, 500, err);
-          next();
-          return err;
-        }
+    const plug = await client.getPlug({ host: deviceHost });
+    if (plug instanceof Error) {
+      serviceHelper.log('error', plug.message);
+      if (typeof res !== 'undefined' && res !== null) {
+        serviceHelper.sendResponse(res, 500, plug);
+        next();
       }
-      return true;
-    }, 35000);
-
-    client.startDiscovery({ broadcast: '192.168.85.255' }).on('device-new', async (device) => {
-      const deviceInfo = await device.getSysInfo();
-      if (deviceInfo.deviceId === deviceID) {
-        deviceHost = device.host;
-        serviceHelper.log('info', `Found required plug @ ip: ${deviceHost}`);
-        client.stopDiscovery();
-
-        const plug = await client.getPlug({ host: deviceHost });
-        if (device instanceof Error) {
-          serviceHelper.log('error', device.message);
-          if (typeof res !== 'undefined' && res !== null) {
-            sentClientResponse = true;
-            serviceHelper.sendResponse(res, 500, device);
-            next();
-          }
-        }
-        const updateResult = await plug.setPowerState(updateAction);
-        if (updateResult instanceof Error) {
-          serviceHelper.log('error', updateResult.message);
-          if (typeof res !== 'undefined' && res !== null) {
-            sentClientResponse = true;
-            serviceHelper.sendResponse(res, 500, updateResult);
-            next();
-          }
-        }
-        serviceHelper.log('info', `TP-Link device: ${deviceID} was turned ${deviceAction}`);
-        if (typeof res !== 'undefined' && res !== null) {
-          sentClientResponse = true;
-          serviceHelper.sendResponse(res, 200, '{ true }');
-          next();
-        }
+    }
+    const updateResult = await plug.setPowerState(updateAction);
+    if (updateResult instanceof Error) {
+      serviceHelper.log('error', updateResult.message);
+      if (typeof res !== 'undefined' && res !== null) {
+        serviceHelper.sendResponse(res, 500, updateResult);
+        next();
       }
-    });
+    }
+    serviceHelper.log('info', `TP-Link device: ${deviceHost} was turned ${deviceAction}`);
+    if (typeof res !== 'undefined' && res !== null) {
+      serviceHelper.sendResponse(res, 200, '{ true }');
+      next();
+    }
   } catch (err) {
     serviceHelper.log('error', err.message);
     if (typeof res !== 'undefined' && res !== null) {
@@ -160,7 +130,7 @@ async function updateDevice(req, res, next) {
   }
   return true;
 }
-skill.put('/devices/:deviceID', updateDevice);
+skill.put('/devices/:deviceHost', updateDevice);
 
 /**
  * @api {put} /schedules/:scheduleID
