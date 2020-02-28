@@ -17,6 +17,7 @@ const APIdevices = require('../api/devices/devices.js');
 
 global.APITraceID = '';
 global.schedules = [];
+
 let ClientAccessKey;
 
 async function setupAndRun() {
