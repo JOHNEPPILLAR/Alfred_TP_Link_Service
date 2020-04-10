@@ -5,5 +5,6 @@ CREATE TABLE tp_link_schedules (
   deviceID    TEXT        NOT NULL,
   name        TEXT        NOT NULL,
   action      BOOLEAN     NOT NULL DEFAULT FALSE,
-  active      BOOLEAN     NOT NULL DEFAULT TRUE
+  active      BOOLEAN     NOT NULL DEFAULT TRUE,
+  ai_override BOOLEAN     NOT NULL DEFAULT FALSE
 )

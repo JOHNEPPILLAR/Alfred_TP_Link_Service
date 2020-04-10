@@ -16,6 +16,7 @@ snyk test
 echo "Set env vars"
 export ENVIRONMENT="development"
 export MOCK="false"
+export ALFRED_CONTROLLER_SERVICE="https://alfred_controller_service:3979"
 
 echo "Run the server"
 npm run local
