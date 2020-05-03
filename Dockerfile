@@ -1,4 +1,4 @@
-FROM node:13-alpine
+FROM node:14-alpine
 
 RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
 	&& mkdir -p /home/nodejs/app \
