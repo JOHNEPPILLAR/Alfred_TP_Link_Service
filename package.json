@@ -21,8 +21,7 @@
     "restify": "^8.5.1",
     "restify-router": "^0.5.1",
     "tplink-smarthome-api": "^2.0.0",
-    "request-promise": "^4.2.5",
-    "snyk": "^1.316.1"
+    "request-promise": "^4.2.5"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
