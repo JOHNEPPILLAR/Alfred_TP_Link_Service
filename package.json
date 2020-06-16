@@ -22,7 +22,7 @@
     "request-promise": "^4.2.5",
     "restify": "^8.5.1",
     "restify-router": "^0.5.1",
-    "snyk": "^1.339.0",
+    "snyk": "^1.342.2",
     "tplink-smarthome-api": "^2.0.0"
   },
   "devDependencies": {
