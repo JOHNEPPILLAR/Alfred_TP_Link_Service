@@ -21,7 +21,7 @@
     "dateformat": "^3.0.3",
     "dotenv": "^8.2.0",
     "tplink-smarthome-api": "^2.0.0",
-    "snyk": "^1.346.0"
+    "snyk": "^1.348.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
