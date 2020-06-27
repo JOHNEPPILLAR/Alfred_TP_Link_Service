@@ -8,7 +8,7 @@
   "main": "lib/server/server.js",
   "scripts": {
     "start": "node lib/server/server.js",
-    "local": "nodemon --trace-warnings lib/server/server.js",
+    "local": "nodemon lib/server/server.js",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect",
     "test": "snyk test"
