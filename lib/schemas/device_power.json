@@ -3,7 +3,7 @@
   "description": "describes properties required to update tp-link device",
   "type": "object",
   "properties": {
-    "deviceHost": {
+    "deviceID": {
       "type": "string",
       "description": "Device id"
     },
@@ -12,5 +12,5 @@
       "description": "Device power status"
     }
   },
-  "required": ["deviceHost", "power"]
+  "required": ["deviceID", "power"]
 }
