@@ -15,7 +15,8 @@ RUN mkdir -p /home/nodejs/app \
 	python \
 	curl \
 	&& npm install --quiet node-gyp -g \
-	&& cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+	&& echo $TZ > /etc/timezone \
 	&& apk del tzdata \
 	&& rm -rf /var/cache/apk/*
 
