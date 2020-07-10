@@ -1,6 +1,8 @@
 FROM node:14-alpine
 
-RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/London > /etc/timezone \
+RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime \
+	&& echo Europe/London > /etc/timezone \
+	&& mv /etc/localtime /etc/localtime.default \
 	&& mkdir -p /home/nodejs/app \
 	&& apk --no-cache --virtual build-dependencies add \
 	git \ 
