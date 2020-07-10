@@ -2,9 +2,9 @@ FROM node:14-alpine
 
 RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime \
 	&& echo Europe/London > /etc/timezone \
-	&& mv /etc/localtime /etc/localtime.default \
 	&& mkdir -p /home/nodejs/app \
 	&& apk --no-cache --virtual build-dependencies add \
+	tzdata \
 	git \ 
 	g++ \
 	gcc \
@@ -15,7 +15,8 @@ RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime \
 	python \
 	curl \
 	&& npm install --quiet node-gyp -g \
-	&& rm -rf /var/cache/apk/*
+	&& rm -rf /var/cache/apk/* \
+	&& dpkg-reconfigure --frontend noninteractive tzdata
 
 WORKDIR /home/nodejs/app
 
