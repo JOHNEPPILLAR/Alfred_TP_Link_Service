@@ -16,12 +16,12 @@
   "dependencies": {
     "alfred-base": "git://github.com/johneppillar/alfred_base_service",
     "alfred-helper": "git://github.com/johneppillar/alfred_helper",
-    "pino": "^6.4.0",
-    "pino-pretty": "^4.0.3",
     "dateformat": "^3.0.3",
     "dotenv": "^8.2.0",
-    "tplink-smarthome-api": "^2.0.0",
-    "snyk": "^1.362.0"
+    "pino": "^6.4.0",
+    "pino-pretty": "^4.0.3",
+    "snyk": "^1.362.0",
+    "tplink-smarthome-api": "^2.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
