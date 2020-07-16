@@ -16,12 +16,12 @@
   "dependencies": {
     "alfred-base": "git://github.com/johneppillar/alfred_base_service",
     "alfred-helper": "git://github.com/johneppillar/alfred_helper",
-    "pino": "^6.3.2",
-    "pino-pretty": "^4.0.1",
+    "pino": "^6.4.0",
+    "pino-pretty": "^4.0.3",
     "dateformat": "^3.0.3",
     "dotenv": "^8.2.0",
     "tplink-smarthome-api": "^2.0.0",
-    "snyk": "^1.361.3"
+    "snyk": "^1.362.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
@@ -33,7 +33,7 @@
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.3",
-    "eslint-plugin-react-hooks": "^4.0.7",
+    "eslint-plugin-react-hooks": "^4.0.8",
     "prettier": "^2.0.5"
   }
 }
