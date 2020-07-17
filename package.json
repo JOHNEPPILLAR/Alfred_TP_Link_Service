@@ -20,7 +20,7 @@
     "dotenv": "^8.2.0",
     "pino": "^6.4.0",
     "pino-pretty": "^4.0.3",
-    "snyk": "^1.362.0",
+    "snyk": "^1.362.1",
     "tplink-smarthome-api": "^2.0.0"
   },
   "devDependencies": {
