@@ -18,14 +18,12 @@
     "alfred-helper": "git://github.com/johneppillar/alfred_helper",
     "dateformat": "^3.0.3",
     "dotenv": "^8.2.0",
-    "pino": "^6.4.0",
-    "pino-pretty": "^4.0.3",
-    "snyk": "^1.362.1",
+    "snyk": "^1.364.0",
     "tplink-smarthome-api": "^2.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "eslint": "~7.4.0",
+    "eslint": "~7.5.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-config-prettier": "^6.11.0",
