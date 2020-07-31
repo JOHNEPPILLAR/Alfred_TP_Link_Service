@@ -24,8 +24,9 @@ npm audit fix
 snyk test
 
 echo "Set env vars"
-export ENVIRONMENT="development"
+#export ENVIRONMENT="development"
 export MOCK="false"
+export TRACE_LEVEL="trace"
 export ALFRED_WEATHER_SERVICE="https://alfred_weather_service:3979"
 
 echo "Run the server"
