@@ -1,86 +1,44 @@
-name: CI
+name: BUILD
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
-  security:
-    name: 🛡️ Check for vulnerabilities
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
-
-      - name: Slack Notification on failure
-        if: failure()
-        uses: rtCamp/action-slack-notify@master
-        env:
-          SLACK_CHANNEL: github_builds
-          SLACK_USERNAME: 'Github CI'
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_ICON: https://avatars2.githubusercontent.com/u/25100863?s=40&v=4
-          SLACK_TITLE: Build status
-          SLACK_MESSAGE: '🛡️ Scan found vulnerabilities'
-          SLACK_COLOR: '#ff0000'
-
-  node:
-    name: 📝 Setup node & check packages install ok
-    runs-on: ubuntu-latest
-    steps:
-      - name: Read .nvmrc
-        run: echo "##[set-output name=NVMRC;]$(cat .node-version)"
-        id: nvm
-
-      - name: Use Node.js (.nvmrc)
-        uses: actions/setup-node@v1
-        with:
-          node-version: '${{ steps.nvm.outputs.NVMRC }}'
-
-      - name: NPM Install
-        run: npm install
-        env:
-          CI: true
-
   build:
-    name: 🛠 Build and push docker container
+    name: 🛠 Build and publish to private registery
     runs-on: ubuntu-latest
-    needs: [security, node]
     steps:
-      - uses: actions/checkout@master
+      - name: Add private registery to docker deamon
+        if: success()
+        run: |
+          echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json
+          sudo service docker restart
+
+      - name: Login to private registery
+        if: success()
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTERY_URL }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Checkout repo
+        if: success()
+        uses: actions/checkout@master
+
       - name: Automated Version Bump
+        if: success()
         uses: phips28/gh-action-bump-version@master
         with:
           tag-prefix: ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Add private registery to docker deamon
-        run: |
-          echo "{ \"insecure-registries\": [\"${{ secrets.DOCKER_REGISTERY_URL }}\"] }" | sudo tee /etc/docker/daemon.json
-          sudo service docker restart
-
-      - name: Login to docker registery
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTERY_URL }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      - name: Build & push docker container to registry
-        run: |
-          docker build . -t ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_tp_link_service:latest
-          docker push ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_tp_link_service:latest
-
-      - name: Slack Notification on sucess
+      - name: Build docker container
         if: success()
-        uses: rtCamp/action-slack-notify@master
-        env:
-          SLACK_CHANNEL: github_builds
-          SLACK_USERNAME: 'Github CI'
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_ICON: https://avatars2.githubusercontent.com/u/25100863?s=40&v=4
-          SLACK_TITLE: Build status
-          SLACK_MESSAGE: 'Build passed  :rocket:'
+        run: docker build . -t ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_tp_link_service
+
+      - name: Push docker container to private registery
+        if: success()
+        run: docker push ${{ secrets.DOCKER_REGISTERY_URL }}/alfred_tp_link_service
 
       - name: Slack Notification on failure
         if: failure()
@@ -93,3 +51,14 @@ jobs:
           SLACK_TITLE: Build status
           SLACK_MESSAGE: 'Build failed  :bangbang:'
           SLACK_COLOR: '#ff0000'
+
+      - name: Slack Notification on sucess
+        if: success()
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_CHANNEL: github_builds
+          SLACK_USERNAME: 'Github CI'
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_ICON: https://avatars2.githubusercontent.com/u/25100863?s=40&v=4
+          SLACK_TITLE: Build status
+          SLACK_MESSAGE: 'Build passed  :rocket:'
