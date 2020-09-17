@@ -3,7 +3,7 @@
   "description": "describes properties required to update tp-link device schedule",
   "type": "object",
   "properties": {
-    "scheduleID": {
+    "schedule": {
       "type": "string",
       "description": "Schedule ID"
     },
@@ -19,7 +19,7 @@
       "type": "number",
       "description": "Minute"
     },
-    "deviceid": {
+    "device": {
       "type": "string",
       "description": "Device ID"
     },
@@ -27,9 +27,9 @@
       "type": "boolean",
       "description": "Device action"
     },
-    "aiOverride": {
+    "override": {
       "type": "boolean",
-      "description": "Schedule aiOverride"
+      "description": "Schedule override"
     },
     "active": {
       "type": "boolean",

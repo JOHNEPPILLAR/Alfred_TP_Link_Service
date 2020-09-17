@@ -1,0 +1,22 @@
+[
+  {
+    "schedule": 1,
+    "hour": 17,
+    "minute": 30,
+    "device": "800693F733CEA366746DA9EE9AA3CE0C17D8ACF4",
+    "description": "Harriets bed lights on",
+    "power": true,
+    "active": true,
+    "override": true
+  },
+  {
+    "schedule": 2,
+    "hour": 17,
+    "minute": 0,
+    "device": "800693F733CEA366746DA9EE9AA3CE0C17D8ACF4",
+    "description": "Harriets bed lights off",
+    "power": false,
+    "active": true,
+    "override": true
+  }
+]
