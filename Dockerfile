@@ -36,7 +36,7 @@ RUN mkdir -p /home/nodejs/app \
 WORKDIR /home/nodejs/app
 
 ## Copy pre-installed/build modules and app
-COPY --from=builder /home/nodejs/app/node_modules .
+COPY --from=builder /home/nodejs/app .
 COPY --chown=node:node . .
 
 ## Swap to node user
