@@ -30,7 +30,7 @@ fi
 echo "Set env vars"
 export ENVIRONMENT="development"
 export MOCK="false"
-export ALFRED_WEATHER_SERVICE="https://alfred_weather_service:3979"
+export ALFRED_WEATHER_SERVICE="https://johnpillar.me:3981/weather"
 
 echo "Get app vault token"
 TMP_VAULT_TOKEN=$VAULT_TOKEN

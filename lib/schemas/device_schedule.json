@@ -7,9 +7,9 @@
       "type": "string",
       "description": "Schedule ID"
     },
-    "name": {
+    "description": {
       "type": "string",
-      "description": "Device name"
+      "description": "Device location and name"
     },
     "hour": {
       "type": "number",
@@ -19,13 +19,9 @@
       "type": "number",
       "description": "Minute"
     },
-    "device": {
+    "deviceIP": {
       "type": "string",
-      "description": "Device ID"
-    },
-    "action": {
-      "type": "boolean",
-      "description": "Device action"
+      "description": "Device IP"
     },
     "override": {
       "type": "boolean",
@@ -34,6 +30,14 @@
     "active": {
       "type": "boolean",
       "description": "Device active"
+    },
+    "power": {
+      "type": "boolean",
+      "description": "Device power state"
+    },
+    "girlsRoom": {
+      "type": "boolean",
+      "description": "Is device in girls bedroom"
     }
   },
   "required": ["scheduleID"]
