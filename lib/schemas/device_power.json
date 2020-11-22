@@ -1,0 +1,16 @@
+{
+  "title": "update device",
+  "description": "describes properties required to update tp-link device",
+  "type": "object",
+  "properties": {
+    "deviceIP": {
+      "type": "string",
+      "description": "Device ip"
+    },
+    "power": {
+      "type": "boolean",
+      "description": "Device power status"
+    }
+  },
+  "required": ["deviceIP", "power"]
+}

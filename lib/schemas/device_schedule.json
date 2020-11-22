@@ -1,0 +1,44 @@
+{
+  "title": "update device schedule",
+  "description": "describes properties required to update tp-link device schedule",
+  "type": "object",
+  "properties": {
+    "schedule": {
+      "type": "string",
+      "description": "Schedule ID"
+    },
+    "description": {
+      "type": "string",
+      "description": "Device location and name"
+    },
+    "hour": {
+      "type": "number",
+      "description": "Hour"
+    },
+    "minute": {
+      "type": "number",
+      "description": "Minute"
+    },
+    "deviceIP": {
+      "type": "string",
+      "description": "Device IP"
+    },
+    "override": {
+      "type": "boolean",
+      "description": "Schedule override"
+    },
+    "active": {
+      "type": "boolean",
+      "description": "Device active"
+    },
+    "power": {
+      "type": "boolean",
+      "description": "Device power state"
+    },
+    "girlsRoom": {
+      "type": "boolean",
+      "description": "Is device in girls bedroom"
+    }
+  },
+  "required": ["scheduleID"]
+}
