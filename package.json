@@ -16,7 +16,7 @@
     "alfred-helper": "git://github.com/johneppillar/alfred_helper",
     "dateformat": "^4.0.0",
     "dotenv": "^8.2.0",
-    "snyk": "^1.431.0",
+    "snyk": "^1.431.2",
     "tplink-smarthome-api": "^3.1.0"
   },
   "devDependencies": {
@@ -30,6 +30,6 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "prettier": "^2.2.0"
+    "prettier": "^2.2.1"
   }
 }
